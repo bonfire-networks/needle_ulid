@@ -1,6 +1,6 @@
-[hex](https://hex.pm/pointer_ulid) [hexdocs](https://hexdocs.pm/pointer_ulid)
+[hex](https://hex.pm/pointers_ulid) [hexdocs](https://hexdocs.pm/pointers_ulid)
 
-# pointer_ulid
+# pointers_ulid
 
 A ULID datatype for Ecto that works with modern ecto and allows access
 to timestamps.
@@ -10,13 +10,13 @@ A maintained fork of [ecto-ulid](https://github.com/TheRealReal/ecto-ulid).
 ## Installation
 
 ```elixir
-{:pointer_ulid, "~> 0.1"}
+{:pointers_ulid, "~> 0.1"}
 ```
 
 ## Copyright and License
 
 Copyright (c) 2018 The RealReal, Inc.
-Copyright (c) 2020 pointer_ulid contributors.
+Copyright (c) 2020 pointers_ulid contributors.
 
 Licensed under the terms of the MIT License.
 

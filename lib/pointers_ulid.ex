@@ -1,4 +1,4 @@
-defmodule Pointer.ULID do
+defmodule Pointers.ULID do
   @moduledoc """
   An Ecto type for ULID strings.
   """
