@@ -2,10 +2,13 @@
 
 # pointers_ulid
 
-A ULID datatype for Ecto that works with modern ecto and allows access
-to timestamps.
+A ULID datatype and some postgres support for ULID operations (`min`
+and `max` functions and aggregates)
 
-A maintained fork of [ecto-ulid](https://github.com/TheRealReal/ecto-ulid).
+Includes a maintained fork of
+[ecto-ulid](https://github.com/TheRealReal/ecto-ulid).
+
+Also optional definitions for which probably ought to ship with postgres by 
 
 ## Installation
 
