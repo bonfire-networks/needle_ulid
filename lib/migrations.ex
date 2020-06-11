@@ -8,8 +8,6 @@ if Code.ensure_loaded?(Ecto.Migration) do
     # https://stackoverflow.com/questions/49227572/function-minuuid-does-not-exist-in-postgresql
 
     defp create_agg(op) do
-      drop_agg(op) # in case it's already defined
-      
       """
       create aggregate #{op}(uuid) (
         sfunc = #{op}_uuid,
