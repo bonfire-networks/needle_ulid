@@ -1,4 +1,5 @@
-[hex](https://hex.pm/pointers_ulid) [hexdocs](https://hexdocs.pm/pointers_ulid)
+[![hex.pm](https://img.shields.io/hexpm/v/pointers_ulid)](https://hex.pm/pointers_ulid)
+[hexdocs](https://hexdocs.pm/pointers_ulid)
 
 # pointers_ulid
 
@@ -13,7 +14,7 @@ Also optional definitions for which probably ought to ship with postgres by
 ## Installation
 
 ```elixir
-{:pointers_ulid, "~> 0.1"}
+{:pointers_ulid, "~> 0.2"}
 ```
 
 ## Copyright and License
