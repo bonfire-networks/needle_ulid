@@ -4,7 +4,7 @@ defmodule Pointers.ULID.MixProject do
   def project do
     [
       app: :pointers_ulid,
-      version: "0.2.0",
+      version: "0.2.1",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: "A maintained ULID datatype for Ecto",

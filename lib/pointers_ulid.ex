@@ -3,7 +3,7 @@ defmodule Pointers.ULID do
   An Ecto type for ULID strings.
   """
   use Ecto.Type
-  import Logger
+  require Logger
 
   def synthesise!(x) when is_binary(x) and byte_size(x) == 26, do: synth(x)
   def synthesise!(x) when is_binary(x) and byte_size(x) > 26, do: synthesise!(String.slice(x, 0, 26))
