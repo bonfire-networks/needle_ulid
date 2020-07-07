@@ -3,10 +3,15 @@ defmodule Pointers.ULID do
   An Ecto type for ULID strings.
   """
   use Ecto.Type
+  import Logger
 
   def synthesise!(x) when is_binary(x) and byte_size(x) == 26, do: synth(x)
-  def synthesise!(x) when is_binary(x) and byte_size(x) > 26, do: throw :too_long
-  def synthesise!(x) when is_binary(x) and byte_size(x) < 26, do: throw :too_short
+  def synthesise!(x) when is_binary(x) and byte_size(x) > 26, do: synthesise!(String.slice(x, 0, 26))
+  def synthesise!(x) when is_binary(x) and byte_size(x) < 20, do: Logger.error("You must provide a longer string, at least 20 and up to 26 characters, to avoid it being padded.")
+  def synthesise!(x) when is_binary(x) and byte_size(x) < 26 do
+    Logger.info("Please provide a longer string, at least 20 and up to 26 characters, to avoid it being padded.")
+    synthesise!(String.pad_trailing(x, 26, "pointy"))
+  end
 
   defp synth(""), do: ""
   defp synth(<< c :: bytes-size(1), rest :: binary >>), do: synth_letter(c) <> synth(rest)
