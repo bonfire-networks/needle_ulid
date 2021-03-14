@@ -45,7 +45,7 @@ if Code.ensure_loaded?(Ecto.Migration) do
     $$ LANGUAGE plpgsql
     """
 
-    defp drop_fun(name), do: "drop function if exists #{name}(uuid, uuid)"
+    defp drop_fun(name), do: "drop function if exists #{name}(uuid, uuid) cascade"
 
     defp min_uuid(), do: execute(@min_uuid, drop_fun("min_uuid"))
 
@@ -54,10 +54,6 @@ if Code.ensure_loaded?(Ecto.Migration) do
     defp min(), do: execute(create_agg("min"), drop_agg("min"))
 
     defp max(), do: execute(create_agg("max"), drop_agg("max"))
-
-    def init_pointers_ulid_extra() do
-      init_pointers_ulid_extra(direction())
-    end
 
     defp functions() do
       min_uuid()
@@ -69,11 +65,15 @@ if Code.ensure_loaded?(Ecto.Migration) do
       max()
     end
 
+    def init_pointers_ulid_extra() do
+      init_pointers_ulid_extra(direction())
+    end
+
     def init_pointers_ulid_extra(:up) do
       functions()
       aggregates()
     end
-    
+
     def init_pointers_ulid_extra(:down) do
       aggregates()
       functions()
