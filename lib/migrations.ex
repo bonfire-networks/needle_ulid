@@ -9,7 +9,7 @@ if Code.ensure_loaded?(Ecto.Migration) do
 
     defp create_agg(op) do
       """
-      create aggregate #{op}(uuid) (
+      create or replace aggregate #{op}(uuid) (
         sfunc = #{op}_uuid,
         stype = uuid,
         combinefunc = #{op}_uuid,
