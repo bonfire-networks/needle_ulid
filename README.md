@@ -1,7 +1,7 @@
+# Pointers.ULID
+
 [![hex.pm](https://img.shields.io/hexpm/v/pointers_ulid)](https://hex.pm/pointers_ulid)
 [hexdocs](https://hexdocs.pm/pointers_ulid)
-
-# pointers_ulid
 
 A ULID datatype and some postgres support for ULID operations (`min`
 and `max` functions and aggregates)
