@@ -1,5 +1,6 @@
 defmodule Pointers.UlidTest do
   use ExUnit.Case, async: true
+  alias Pointers.ULID
 
   @binary <<1, 95, 194, 60, 108, 73, 209, 114, 136, 236, 133, 115, 106, 195, 145, 22>>
   @encoded "01BZ13RV29T5S8HV45EDNC748P"
@@ -8,9 +9,9 @@ defmodule Pointers.UlidTest do
 
   test "generate/1 encodes milliseconds in first 10 characters" do
     # test case from ULID README: https://github.com/ulid/javascript#seed-time
-    <<encoded::bytes-size(10), _rest::bytes-size(16)>> = Pointers.ULID.generate(1469918176385)
+    timestamp = ULID.encoded_timestamp(ULID.generate(1469918176385))
 
-    assert encoded == "01ARYZ6S41"
+    assert timestamp == "01ARYZ6S41"
   end
 
   test "generate/1 encodes a timestamp" do

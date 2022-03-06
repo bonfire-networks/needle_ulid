@@ -5,6 +5,7 @@ defmodule Pointers.ULID do
   use Ecto.Type
   require Logger
 
+  @doc "translates alphanumerics into a sentinel ulid value"
   def synthesise!(x) when is_binary(x) and byte_size(x) == 26, do: synth(x)
   def synthesise!(x) when is_binary(x) and byte_size(x) > 26, do: synthesise!(String.slice(x, 0, 26))
   def synthesise!(x) when is_binary(x) and byte_size(x) < 26, do: Logger.error("Too short, need #{26 - byte_size(x)} chars.")
@@ -76,16 +77,18 @@ defmodule Pointers.ULID do
   defp synth_letter("Z"), do: "Z"
   defp synth_letter(other), do: throw {:bad_letter, other}
 
+  @doc "Returns the timestamp portion of the encoded ulid"
+  def encoded_timestamp(<<ts::bytes-size(10), _::bytes-size(16)>>), do: ts
+
+  @doc "Returns the randomness portion of the encoded ulid"
+  def encoded_randomness(<<_::bytes-size(10), r::bytes-size(16)>>), do: r
+
   @doc "Returns the timestamp of an encoded or unencoded ULID"
   def timestamp(<<_::bytes-size(26)>> = encoded) do
-    with {:ok, decoded} <- decode(encoded) do
-      bintimestamp(decoded)
-    end
+    with {:ok, decoded} <- decode(encoded), do: {:ok, bintimestamp(decoded)}
   end
 
-  def bintimestamp(<<timestamp::unsigned-size(48), _ :: binary>>) do
-    DateTime.from_unix(timestamp, :millisecond)
-  end
+  def bintimestamp(<<timestamp::unsigned-size(48), _ :: binary>>), do: timestamp
 
   @doc """
   The underlying schema type.
@@ -121,14 +124,19 @@ defmodule Pointers.ULID do
   def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
   def dump(_), do: :error
 
+  def dump!(encoded), do: elem(dump(encoded), 1)
+
   @doc """
   Converts a binary ULID into a Crockford Base32 encoded string.
   """
-  def load(<<_::unsigned-size(128)>> = bytes), do: encode(bytes)
+  def load(<<0::size(16)>>), do: "00000000000000000000000000"
+  def load(bytes) when is_binary(bytes) and byte_size(bytes) == 16, do: encode(bytes)
   def load(_), do: :error
 
-  @doc false
+  @doc false # called by ecto when autogenerate is enabled
   def autogenerate, do: generate()
+
+  defp random(), do: :crypto.strong_rand_bytes(10)
 
   @doc """
   Generates a Crockford Base32 encoded ULID.
@@ -140,10 +148,7 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def generate(timestamp \\ System.system_time(:millisecond)) do
-    {:ok, ulid} = encode(bingenerate(timestamp))
-    ulid
-  end
+  def generate(timestamp \\ System.system_time(:millisecond)), do: ExULID.ULID.generate(timestamp)
 
   @doc """
   Generates a binary ULID.
@@ -155,66 +160,33 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def bingenerate(timestamp \\ System.system_time(:millisecond)) do
-    <<timestamp::unsigned-size(48), :crypto.strong_rand_bytes(10)::binary>>
+  def bingenerate(timestamp \\ System.system_time(:millisecond)), do: <<timestamp::size(48), random()::binary>>
+
+  defp encode(bytes, leading_zeroes? \\ true) do
+    with {:ok, encoded} <- ExULID.Crockford.encode32(bytes) do
+      padded = if leading_zeroes?, do: add_leading_zeroes(encoded), else: encoded
+      {:ok, padded}
+    end
   end
 
-  defp encode(<< b1::3,  b2::5,  b3::5,  b4::5,  b5::5,  b6::5,  b7::5,  b8::5,  b9::5, b10::5, b11::5, b12::5, b13::5,
-                b14::5, b15::5, b16::5, b17::5, b18::5, b19::5, b20::5, b21::5, b22::5, b23::5, b24::5, b25::5, b26::5>>) do
-    <<e(b1), e(b2), e(b3), e(b4), e(b5), e(b6), e(b7), e(b8), e(b9), e(b10), e(b11), e(b12), e(b13),
-      e(b14), e(b15), e(b16), e(b17), e(b18), e(b19), e(b20), e(b21), e(b22), e(b23), e(b24), e(b25), e(b26)>>
-  catch
-    :error -> :error
-  else
-    encoded -> {:ok, encoded}
+  defp add_leading_zeroes(bytes) when byte_size(bytes) >= 26, do: bytes
+  defp add_leading_zeroes(bytes), do: add_leading_zeroes("0" <> bytes)
+
+    defp decode(bytes) do
+    case ExULID.ULID.decode(bytes) do
+      {:error, _} -> :error
+      {time, randomness} ->
+        {:ok, wat} = ExULID.Crockford.decode32(randomness)
+        {:ok, <<time::48, wat::binary>>}
+    end
   end
-  defp encode(_), do: :error
 
-  @compile {:inline, e: 1}
-
-  defp e(0), do: ?0
-  defp e(1), do: ?1
-  defp e(2), do: ?2
-  defp e(3), do: ?3
-  defp e(4), do: ?4
-  defp e(5), do: ?5
-  defp e(6), do: ?6
-  defp e(7), do: ?7
-  defp e(8), do: ?8
-  defp e(9), do: ?9
-  defp e(10), do: ?A
-  defp e(11), do: ?B
-  defp e(12), do: ?C
-  defp e(13), do: ?D
-  defp e(14), do: ?E
-  defp e(15), do: ?F
-  defp e(16), do: ?G
-  defp e(17), do: ?H
-  defp e(18), do: ?J
-  defp e(19), do: ?K
-  defp e(20), do: ?M
-  defp e(21), do: ?N
-  defp e(22), do: ?P
-  defp e(23), do: ?Q
-  defp e(24), do: ?R
-  defp e(25), do: ?S
-  defp e(26), do: ?T
-  defp e(27), do: ?V
-  defp e(28), do: ?W
-  defp e(29), do: ?X
-  defp e(30), do: ?Y
-  defp e(31), do: ?Z
-
-  defp decode(<< c1::8,  c2::8,  c3::8,  c4::8,  c5::8,  c6::8,  c7::8,  c8::8,  c9::8, c10::8, c11::8, c12::8, c13::8,
-                c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8, c24::8, c25::8, c26::8>>) do
-    << d(c1)::3,  d(c2)::5,  d(c3)::5,  d(c4)::5,  d(c5)::5,  d(c6)::5,  d(c7)::5,  d(c8)::5,  d(c9)::5, d(c10)::5, d(c11)::5, d(c12)::5, d(c13)::5,
-      d(c14)::5, d(c15)::5, d(c16)::5, d(c17)::5, d(c18)::5, d(c19)::5, d(c20)::5, d(c21)::5, d(c22)::5, d(c23)::5, d(c24)::5, d(c25)::5, d(c26)::5>>
-  catch
-    :error -> :error
-  else
-    decoded -> {:ok, decoded}
+  @alphabet "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+  defp e(""), do: ""
+  defp e(index) when is_integer(index) and index >= 0 and index < 32, do: :binary.at(@alphabet, index)
+  defp e(<< c1::5, c2::5, c3::5, c4::5, c5::5, c6::5, c7::5, c8::5, rest::binary >>) do
+    << e(c1), e(c2), e(c3), e(c4), e(c5), e(c6), e(c7), e(c8), e(rest)::binary >>
   end
-  defp decode(_), do: :error
 
   @compile {:inline, d: 1}
 

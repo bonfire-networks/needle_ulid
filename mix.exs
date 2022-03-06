@@ -8,12 +8,12 @@ defmodule Pointers.ULID.MixProject do
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: "A maintained ULID datatype for Ecto",
-      homepage_url: "https://github.com/commonspub/pointers_ulid",
-      source_url: "https://github.com/commonspub/pointers_ulid",
+      homepage_url: "https://github.com/bonfire-networks/pointers_ulid",
+      source_url: "https://github.com/bonfire-networks/pointers_ulid",
       package: [
         licenses: ["MIT"],
         links: %{
-          "Repository" => "https://github.com/commonspub/pointers_ulid",
+          "Repository" => "https://github.com/bonfire-networks/pointers_ulid",
           "Hexdocs" => "https://hexdocs.pm/pointers_ulid",
         },
       ],
@@ -34,6 +34,7 @@ defmodule Pointers.ULID.MixProject do
     [
       {:ecto, "~> 3.4"},
       {:ecto_sql, "~> 3.4", optional: true}, # you might just want it for in-memory use
+      {:ex_ulid, "~> 0.1"}, # let someone else worry about it.
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},
     ]
   end
