@@ -6,11 +6,23 @@ defmodule Pointers.UlidTest do
 
   # generate/0
 
-  test "generate/0 encodes milliseconds in first 10 characters" do
+  test "generate/1 encodes milliseconds in first 10 characters" do
     # test case from ULID README: https://github.com/ulid/javascript#seed-time
     <<encoded::bytes-size(10), _rest::bytes-size(16)>> = Pointers.ULID.generate(1469918176385)
 
     assert encoded == "01ARYZ6S41"
+  end
+
+  test "generate/1 encodes a timestamp" do
+    {:ok, utc_date, _} = DateTime.from_iso8601("2015-02-10T15:00:00Z")
+
+    timestamp = DateTime.to_unix(utc_date)
+
+    ulid = Pointers.ULID.generate(timestamp)
+
+   {:ok, encoded_ts} = Pointers.ULID.timestamp(ulid)
+
+    assert encoded_ts == timestamp
   end
 
   test "generate/0 generates unique identifiers" do
