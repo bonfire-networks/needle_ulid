@@ -6,8 +6,8 @@
 A ULID datatype and some postgres support for ULID operations (`min`
 and `max` functions and aggregates)
 
-Includes a maintained fork of
-[ecto-ulid](https://github.com/TheRealReal/ecto-ulid).
+Originally forked from
+[ecto-ulid](https://github.com/TheRealReal/ecto-ulid) but the internals have been replaced with [ex_ulid](https://github.com/omgnetwork/ex_ulid) 
 
 Also optional definitions for which probably ought to ship with postgres by 
 
