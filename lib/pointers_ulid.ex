@@ -6,9 +6,15 @@ defmodule Pointers.ULID do
   require Logger
 
   @doc "translates alphanumerics into a sentinel ulid value"
-  def synthesise!(x) when is_binary(x) and byte_size(x) == 26, do: synth(x)
-  def synthesise!(x) when is_binary(x) and byte_size(x) > 26, do: synthesise!(String.slice(x, 0, 26))
-  def synthesise!(x) when is_binary(x) and byte_size(x) < 26, do: Logger.error("Too short, need #{26 - byte_size(x)} chars.")
+  def synthesise!(x) when is_binary(x) do
+    cond do
+      byte_size(x) > 26 ->
+        Logger.warn("Too long, chopping off last #{byte_size(x) - 26} chars")
+        synthesise!(String.slice(x, 0, 26))
+      byte_size(x) < 26 -> Logger.error("Too short, need #{26 - byte_size(x)} chars.")
+      true -> deform_first(synth(x))
+    end
+  end
 
   defp synth(""), do: ""
   defp synth(<< c :: bytes-size(1), rest :: binary >>), do: synth_letter(c) <> synth(rest)
@@ -76,6 +82,19 @@ defmodule Pointers.ULID do
   defp synth_letter("Y"), do: "Y"
   defp synth_letter("Z"), do: "Z"
   defp synth_letter(other), do: throw {:bad_letter, other}
+
+  defp deform_first(input="0" <> _rest), do: input
+  defp deform_first(input="1" <> _rest), do: input
+  defp deform_first(input="2" <> _rest), do: input
+  defp deform_first(input="3" <> _rest), do: input
+  defp deform_first(input="4" <> _rest), do: input
+  defp deform_first(input="5" <> _rest), do: input
+  defp deform_first(input="6" <> _rest), do: input
+  defp deform_first(input="7" <> _rest), do: input
+  defp deform_first(<<_::8, rest::binary>>) do
+    Logger.warn("First character must be a digit in the range 0-7, replacing with 7")
+    "7" <> rest
+  end
 
   @doc "Returns the timestamp portion of the encoded ulid"
   def encoded_timestamp(<<ts::bytes-size(10), _::bytes-size(16)>>), do: ts
@@ -180,49 +199,6 @@ defmodule Pointers.ULID do
         {:ok, <<time::48, wat::binary>>}
     end
   end
-
-  @alphabet "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
-  defp e(""), do: ""
-  defp e(index) when is_integer(index) and index >= 0 and index < 32, do: :binary.at(@alphabet, index)
-  defp e(<< c1::5, c2::5, c3::5, c4::5, c5::5, c6::5, c7::5, c8::5, rest::binary >>) do
-    << e(c1), e(c2), e(c3), e(c4), e(c5), e(c6), e(c7), e(c8), e(rest)::binary >>
-  end
-
-  @compile {:inline, d: 1}
-
-  defp d(?0), do: 0
-  defp d(?1), do: 1
-  defp d(?2), do: 2
-  defp d(?3), do: 3
-  defp d(?4), do: 4
-  defp d(?5), do: 5
-  defp d(?6), do: 6
-  defp d(?7), do: 7
-  defp d(?8), do: 8
-  defp d(?9), do: 9
-  defp d(?A), do: 10
-  defp d(?B), do: 11
-  defp d(?C), do: 12
-  defp d(?D), do: 13
-  defp d(?E), do: 14
-  defp d(?F), do: 15
-  defp d(?G), do: 16
-  defp d(?H), do: 17
-  defp d(?J), do: 18
-  defp d(?K), do: 19
-  defp d(?M), do: 20
-  defp d(?N), do: 21
-  defp d(?P), do: 22
-  defp d(?Q), do: 23
-  defp d(?R), do: 24
-  defp d(?S), do: 25
-  defp d(?T), do: 26
-  defp d(?V), do: 27
-  defp d(?W), do: 28
-  defp d(?X), do: 29
-  defp d(?Y), do: 30
-  defp d(?Z), do: 31
-  defp d(_), do: throw :error
 
   defp valid?(<< c1::8,  c2::8,  c3::8,  c4::8,  c5::8,  c6::8,  c7::8,  c8::8,  c9::8, c10::8, c11::8, c12::8, c13::8,
                 c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8, c24::8, c25::8, c26::8>>) do
