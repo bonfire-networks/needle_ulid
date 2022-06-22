@@ -18,7 +18,7 @@ defmodule Pointers.ULID.MixProject do
         },
       ],
       docs: [
-        main: "readme", # The first page to display from the docs 
+        main: "readme", # The first page to display from the docs
         extras: ["README.md"], # extra pages to include
       ],
       deps: deps(),
@@ -33,11 +33,10 @@ defmodule Pointers.ULID.MixProject do
   defp deps do
     [
       {:ecto, "~> 3.4"},
-      {:ecto_sql, "~> 3.4", optional: true}, # you might just want it for in-memory use
+      {:ecto_sql, "~> 3.8", optional: true}, # you might just want it for in-memory use
       {:ex_ulid, "~> 0.1"}, # let someone else worry about it.
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},
     ]
   end
 
 end
-
