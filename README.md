@@ -7,14 +7,12 @@ A ULID datatype and some postgres support for ULID operations (`min`
 and `max` functions and aggregates)
 
 Originally forked from
-[ecto-ulid](https://github.com/TheRealReal/ecto-ulid) but the internals have been replaced with [ex_ulid](https://github.com/omgnetwork/ex_ulid) 
-
-Also optional definitions for which probably ought to ship with postgres by 
+[ecto-ulid](https://github.com/TheRealReal/ecto-ulid) but the internals have been replaced with a dependency on [ex_ulid](https://github.com/omgnetwork/ex_ulid) 
 
 ## Installation
 
 ```elixir
-{:pointers_ulid, "~> 0.2"}
+{:pointers_ulid, git: "https://github.com/bonfire-networks/pointers_ulid", branch: "main"}
 ```
 
 ## Copyright and License
