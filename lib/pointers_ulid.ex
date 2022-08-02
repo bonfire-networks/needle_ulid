@@ -7,6 +7,7 @@ defmodule Pointers.ULID do
 
   @doc "translates alphanumerics into a sentinel ulid value"
   def synthesise!(x) when is_binary(x) do
+    x = Regex.replace(~r/[^a-zA-Z0-9]/, x, "")
     cond do
       byte_size(x) > 26 ->
         Logger.warn("Too long, chopping off last #{byte_size(x) - 26} chars")
