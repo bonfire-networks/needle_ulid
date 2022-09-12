@@ -1,7 +1,5 @@
 if Code.ensure_loaded?(Ecto.Migration) do
-
   defmodule Pointers.ULID.Migration do
-
     import Ecto.Migration
 
     # Based on answers to this SO thread, tweaked.
@@ -45,7 +43,8 @@ if Code.ensure_loaded?(Ecto.Migration) do
     $$ LANGUAGE plpgsql
     """
 
-    defp drop_fun(name), do: "drop function if exists #{name}(uuid, uuid) cascade"
+    defp drop_fun(name),
+      do: "drop function if exists #{name}(uuid, uuid) cascade"
 
     defp min_uuid(), do: execute(@min_uuid, drop_fun("min_uuid"))
 
@@ -78,7 +77,5 @@ if Code.ensure_loaded?(Ecto.Migration) do
       aggregates()
       functions()
     end
-
   end
-
 end

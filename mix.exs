@@ -14,14 +14,16 @@ defmodule Pointers.ULID.MixProject do
         licenses: ["MIT"],
         links: %{
           "Repository" => "https://github.com/bonfire-networks/pointers_ulid",
-          "Hexdocs" => "https://hexdocs.pm/pointers_ulid",
-        },
+          "Hexdocs" => "https://hexdocs.pm/pointers_ulid"
+        }
       ],
       docs: [
-        main: "readme", # The first page to display from the docs
-        extras: ["README.md"], # extra pages to include
+        # The first page to display from the docs
+        main: "readme",
+        # extra pages to include
+        extras: ["README.md"]
       ],
-      deps: deps(),
+      deps: deps()
     ]
   end
 
@@ -33,10 +35,11 @@ defmodule Pointers.ULID.MixProject do
   defp deps do
     [
       {:ecto, "~> 3.4"},
-      {:ecto_sql, "~> 3.8", optional: true}, # you might just want it for in-memory use
-      {:ex_ulid, "~> 0.1"}, # let someone else worry about it.
-      {:ex_doc, "~> 0.16", only: :dev, runtime: false},
+      # you might just want it for in-memory use
+      {:ecto_sql, "~> 3.8", optional: true},
+      # let someone else worry about it.
+      {:ex_ulid, "~> 0.1"},
+      {:ex_doc, "~> 0.16", only: :dev, runtime: false}
     ]
   end
-
 end

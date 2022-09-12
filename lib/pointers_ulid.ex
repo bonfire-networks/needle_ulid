@@ -8,17 +8,24 @@ defmodule Pointers.ULID do
   @doc "translates alphanumerics into a sentinel ulid value"
   def synthesise!(x) when is_binary(x) do
     x = Regex.replace(~r/[^a-zA-Z0-9]/, x, "")
+
     cond do
       byte_size(x) > 26 ->
         Logger.warn("Too long, chopping off last #{byte_size(x) - 26} chars")
         synthesise!(String.slice(x, 0, 26))
-      byte_size(x) < 26 -> Logger.error("Too short, need #{26 - byte_size(x)} chars.")
-      true -> deform_first(synth(x))
+
+      byte_size(x) < 26 ->
+        Logger.error("Too short, need #{26 - byte_size(x)} chars.")
+
+      true ->
+        deform_first(synth(x))
     end
   end
 
   defp synth(""), do: ""
-  defp synth(<< c :: bytes-size(1), rest :: binary >>), do: synth_letter(c) <> synth(rest)
+
+  defp synth(<<c::bytes-size(1), rest::binary>>),
+    do: synth_letter(c) <> synth(rest)
 
   defp synth_letter("0"), do: "0"
   defp synth_letter("1"), do: "1"
@@ -82,18 +89,20 @@ defmodule Pointers.ULID do
   defp synth_letter("X"), do: "X"
   defp synth_letter("Y"), do: "Y"
   defp synth_letter("Z"), do: "Z"
-  defp synth_letter(other), do: throw {:bad_letter, other}
+  defp synth_letter(other), do: throw({:bad_letter, other})
 
-  defp deform_first(input="0" <> _rest), do: input
-  defp deform_first(input="1" <> _rest), do: input
-  defp deform_first(input="2" <> _rest), do: input
-  defp deform_first(input="3" <> _rest), do: input
-  defp deform_first(input="4" <> _rest), do: input
-  defp deform_first(input="5" <> _rest), do: input
-  defp deform_first(input="6" <> _rest), do: input
-  defp deform_first(input="7" <> _rest), do: input
+  defp deform_first(input = "0" <> _rest), do: input
+  defp deform_first(input = "1" <> _rest), do: input
+  defp deform_first(input = "2" <> _rest), do: input
+  defp deform_first(input = "3" <> _rest), do: input
+  defp deform_first(input = "4" <> _rest), do: input
+  defp deform_first(input = "5" <> _rest), do: input
+  defp deform_first(input = "6" <> _rest), do: input
+  defp deform_first(input = "7" <> _rest), do: input
+
   defp deform_first(<<_::8, rest::binary>>) do
     Logger.warn("First character must be a digit in the range 0-7, replacing with 7")
+
     "7" <> rest
   end
 
@@ -108,7 +117,7 @@ defmodule Pointers.ULID do
     with {:ok, decoded} <- decode(encoded), do: {:ok, bintimestamp(decoded)}
   end
 
-  def bintimestamp(<<timestamp::unsigned-size(48), _ :: binary>>), do: timestamp
+  def bintimestamp(<<timestamp::unsigned-size(48), _::binary>>), do: timestamp
 
   @doc """
   The underlying schema type.
@@ -119,6 +128,7 @@ defmodule Pointers.ULID do
   Casts a 26-byte encoded string to ULID or a 16-byte binary unchanged
   """
   def cast(<<_::bytes-size(16)>> = value), do: {:ok, value}
+
   def cast(<<_::bytes-size(26)>> = value) do
     if valid?(value) do
       {:ok, value}
@@ -126,6 +136,7 @@ defmodule Pointers.ULID do
       :error
     end
   end
+
   def cast(_), do: :error
 
   @doc """
@@ -150,10 +161,14 @@ defmodule Pointers.ULID do
   Converts a binary ULID into a Crockford Base32 encoded string.
   """
   def load(<<0::size(16)>>), do: "00000000000000000000000000"
-  def load(bytes) when is_binary(bytes) and byte_size(bytes) == 16, do: encode(bytes)
+
+  def load(bytes) when is_binary(bytes) and byte_size(bytes) == 16,
+    do: encode(bytes)
+
   def load(_), do: :error
 
-  @doc false # called by ecto when autogenerate is enabled
+  # called by ecto when autogenerate is enabled
+  @doc false
   def autogenerate, do: generate()
 
   defp random(), do: :crypto.strong_rand_bytes(10)
@@ -168,7 +183,8 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def generate(timestamp \\ System.system_time(:millisecond)), do: ExULID.ULID.generate(timestamp)
+  def generate(timestamp \\ System.system_time(:millisecond)),
+    do: ExULID.ULID.generate(timestamp)
 
   @doc """
   Generates a binary ULID.
@@ -180,11 +196,13 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def bingenerate(timestamp \\ System.system_time(:millisecond)), do: <<timestamp::size(48), random()::binary>>
+  def bingenerate(timestamp \\ System.system_time(:millisecond)),
+    do: <<timestamp::size(48), random()::binary>>
 
   defp encode(bytes, leading_zeroes? \\ true) do
     with {:ok, encoded} <- ExULID.Crockford.encode32(bytes) do
       padded = if leading_zeroes?, do: add_leading_zeroes(encoded), else: encoded
+
       {:ok, padded}
     end
   end
@@ -192,20 +210,28 @@ defmodule Pointers.ULID do
   defp add_leading_zeroes(bytes) when byte_size(bytes) >= 26, do: bytes
   defp add_leading_zeroes(bytes), do: add_leading_zeroes("0" <> bytes)
 
-    defp decode(bytes) do
+  defp decode(bytes) do
     case ExULID.ULID.decode(bytes) do
-      {:error, _} -> :error
+      {:error, _} ->
+        :error
+
       {time, randomness} ->
         {:ok, wat} = ExULID.Crockford.decode32(randomness)
         {:ok, <<time::48, wat::binary>>}
     end
   end
 
-  defp valid?(<< c1::8,  c2::8,  c3::8,  c4::8,  c5::8,  c6::8,  c7::8,  c8::8,  c9::8, c10::8, c11::8, c12::8, c13::8,
-                c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8, c24::8, c25::8, c26::8>>) do
-     v(c1) &&  v(c2) &&  v(c3) &&  v(c4) &&  v(c5) &&  v(c6) &&  v(c7) &&  v(c8) &&  v(c9) && v(c10) && v(c11) && v(c12) && v(c13) &&
-    v(c14) && v(c15) && v(c16) && v(c17) && v(c18) && v(c19) && v(c20) && v(c21) && v(c22) && v(c23) && v(c24) && v(c25) && v(c26)
+  defp valid?(
+         <<c1::8, c2::8, c3::8, c4::8, c5::8, c6::8, c7::8, c8::8, c9::8, c10::8, c11::8, c12::8,
+           c13::8, c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8,
+           c24::8, c25::8, c26::8>>
+       ) do
+    v(c1) && v(c2) && v(c3) && v(c4) && v(c5) && v(c6) && v(c7) && v(c8) &&
+      v(c9) && v(c10) && v(c11) && v(c12) && v(c13) &&
+      v(c14) && v(c15) && v(c16) && v(c17) && v(c18) && v(c19) && v(c20) &&
+      v(c21) && v(c22) && v(c23) && v(c24) && v(c25) && v(c26)
   end
+
   defp valid?(_), do: false
 
   @compile {:inline, v: 1}

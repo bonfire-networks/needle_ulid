@@ -9,7 +9,7 @@ defmodule Pointers.UlidTest do
 
   test "generate/1 encodes milliseconds in first 10 characters" do
     # test case from ULID README: https://github.com/ulid/javascript#seed-time
-    timestamp = ULID.encoded_timestamp(ULID.generate(1469918176385))
+    timestamp = ULID.encoded_timestamp(ULID.generate(1_469_918_176_385))
 
     assert timestamp == "01ARYZ6S41"
   end
@@ -21,7 +21,7 @@ defmodule Pointers.UlidTest do
 
     ulid = Pointers.ULID.generate(timestamp)
 
-   {:ok, encoded_ts} = Pointers.ULID.timestamp(ulid)
+    {:ok, encoded_ts} = Pointers.ULID.timestamp(ulid)
 
     assert encoded_ts == timestamp
   end
@@ -138,11 +138,13 @@ defmodule Pointers.UlidTest do
 
   test "load/1 encodes binary of correct length" do
     {:ok, encoded} = Pointers.ULID.load(<<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>)
+
     assert encoded == "00000000000000000000000000"
   end
 
   test "load/1 returns error when data is too short" do
-    assert Pointers.ULID.load(<<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>) == :error
+    assert Pointers.ULID.load(<<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>) ==
+             :error
   end
 
   test "load/1 returns error when data is too long" do
