@@ -11,7 +11,7 @@ defmodule Pointers.ULID do
 
     cond do
       byte_size(x) > 26 ->
-        Logger.warn("Too long, chopping off last #{byte_size(x) - 26} chars")
+        Logger.warning("Too long, chopping off last #{byte_size(x) - 26} chars")
         synthesise!(String.slice(x, 0, 26))
 
       byte_size(x) < 26 ->
@@ -101,7 +101,7 @@ defmodule Pointers.ULID do
   defp deform_first(input = "7" <> _rest), do: input
 
   defp deform_first(<<_::8, rest::binary>>) do
-    Logger.warn("First character must be a digit in the range 0-7, replacing with 7")
+    Logger.warning("First character must be a digit in the range 0-7, replacing with 7")
 
     "7" <> rest
   end
