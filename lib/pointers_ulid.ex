@@ -183,7 +183,11 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def generate(timestamp \\ System.system_time(:millisecond)),
+
+  def generate(timestamp \\ System.system_time(:millisecond))
+  def generate(%DateTime{} = date), do: DateTime.to_unix(date, :millisecond) |> generate()
+
+  def generate(timestamp),
     do: ExULID.ULID.generate(timestamp)
 
   @doc """
@@ -196,7 +200,10 @@ defmodule Pointers.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def bingenerate(timestamp \\ System.system_time(:millisecond)),
+  def bingenerate(timestamp \\ System.system_time(:millisecond))
+  def bingenerate(%DateTime{} = date), do: DateTime.to_unix(date, :millisecond) |> bingenerate()
+
+  def bingenerate(timestamp),
     do: <<timestamp::size(48), random()::binary>>
 
   defp encode(bytes, leading_zeroes? \\ true) do
