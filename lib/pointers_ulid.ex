@@ -155,7 +155,12 @@ defmodule Pointers.ULID do
   def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
   def dump(_), do: :error
 
-  def dump!(encoded), do: elem(dump(encoded), 1)
+  def dump!(encoded) do 
+    case dump(encoded) do
+      {:ok, ulid} -> ulid
+      _ -> raise Ecto.CastError, type: __MODULE__, value: encoded
+    end
+  end
 
   @doc """
   Converts a binary ULID into a Crockford Base32 encoded string.
