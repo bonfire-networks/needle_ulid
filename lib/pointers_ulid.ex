@@ -155,7 +155,7 @@ defmodule Pointers.ULID do
   def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
   def dump(_), do: :error
 
-  def dump!(encoded) do 
+  def dump!(encoded) do
     case dump(encoded) do
       {:ok, ulid} -> ulid
       _ -> raise Ecto.CastError, type: __MODULE__, value: encoded
