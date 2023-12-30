@@ -1,7 +1,7 @@
-# Pointers.ULID
+# Needle.ULID
 
-[![hex.pm](https://img.shields.io/hexpm/v/pointers_ulid)](https://hex.pm/packages/pointers_ulid)
-[hexdocs](https://hexdocs.pm/pointers_ulid)
+[![hex.pm](https://img.shields.io/hexpm/v/needle_ulid)](https://hex.pm/packages/needle_ulid)
+[hexdocs](https://hexdocs.pm/needle_ulid)
 
 A ULID datatype and some postgres support for ULID operations (`min`
 and `max` functions and aggregates)
@@ -12,13 +12,13 @@ Originally forked from
 ## Installation
 
 ```elixir
-{:pointers_ulid, git: "https://github.com/bonfire-networks/pointers_ulid", branch: "main"}
+{:needle_ulid, git: "https://github.com/bonfire-networks/needle_ulid", branch: "main"}
 ```
 
 ## Copyright and License
 
 Copyright (c) 2018 The RealReal, Inc.
-Copyright (c) 2020 pointers_ulid contributors.
+Copyright (c) 2020 needle_ulid contributors.
 
 Licensed under the terms of the MIT License.
 

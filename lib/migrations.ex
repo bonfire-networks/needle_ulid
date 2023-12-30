@@ -1,5 +1,5 @@
 if Code.ensure_loaded?(Ecto.Migration) do
-  defmodule Pointers.ULID.Migration do
+  defmodule Needle.ULID.Migration do
     import Ecto.Migration
 
     # Based on answers to this SO thread, tweaked.

@@ -1,20 +1,20 @@
-defmodule Pointers.ULID.MixProject do
+defmodule Needle.ULID.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :pointers_ulid,
-      version: "0.2.2",
+      app: :needle_ulid,
+      version: "0.3.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
-      description: "A maintained ULID datatype for Ecto",
-      homepage_url: "https://github.com/bonfire-networks/pointers_ulid",
-      source_url: "https://github.com/bonfire-networks/pointers_ulid",
+      description: "Provides an ULID datatype for Ecto (using ex_ulid) and related helpers",
+      homepage_url: "https://github.com/bonfire-networks/needle_ulid",
+      source_url: "https://github.com/bonfire-networks/needle_ulid",
       package: [
         licenses: ["MIT"],
         links: %{
-          "Repository" => "https://github.com/bonfire-networks/pointers_ulid",
-          "Hexdocs" => "https://hexdocs.pm/pointers_ulid"
+          "Repository" => "https://github.com/bonfire-networks/needle_ulid",
+          "Hexdocs" => "https://hexdocs.pm/needle_ulid"
         }
       ],
       docs: [
