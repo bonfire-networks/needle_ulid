@@ -1,7 +1,5 @@
 defmodule Needle.ULID do
-  @moduledoc """
-  An Ecto type for ULID strings.
-  """
+  @moduledoc "./README.md" |> File.stream!() |> Enum.drop(1) |> Enum.join()
   use Ecto.Type
   require Logger
 

@@ -3,8 +3,7 @@
 [![hex.pm](https://img.shields.io/hexpm/v/needle_ulid)](https://hex.pm/packages/needle_ulid)
 [hexdocs](https://hexdocs.pm/needle_ulid)
 
-A ULID datatype and some postgres support for ULID operations (`min`
-and `max` functions and aggregates)
+A ULID datatype and some postgres support for ULID operations (`min` and `max` functions and aggregates)
 
 Originally forked from
 [ecto-ulid](https://github.com/TheRealReal/ecto-ulid) but the internals have been replaced with a dependency on [ex_ulid](https://github.com/omgnetwork/ex_ulid) 
