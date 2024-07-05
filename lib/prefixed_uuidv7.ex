@@ -16,6 +16,8 @@ defmodule Needle.ULID.PrefixedUUID do
   def init(opts) do
     schema = Keyword.fetch!(opts, :schema)
     field = Keyword.fetch!(opts, :field)
+
+    # TODO: use faster Rust-based https://hex.pm/packages/uuidv7 instead of Uniq?
     uniq = Uniq.UUID.init(schema: schema, field: field, version: 7, default: :raw, dump: :raw)
 
     case opts[:primary_key] do

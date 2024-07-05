@@ -37,7 +37,7 @@ defmodule Needle.ULID.MixProject do
       # for ULID support
       {:ex_ulid, "~> 0.1"},
       # for UUID support
-      {:uniq, "~> 0.6"},
+      {:uniq, "~> 0.6", optional: true},
       {:ecto, "~> 3.4"},
       # you might just want it for in-memory use
       {:ecto_sql, "~> 3.8", optional: true},
