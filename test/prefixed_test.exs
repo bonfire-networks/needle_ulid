@@ -1,3 +1,4 @@
+if Code.ensure_loaded?(Uniq.UUID) do
 defmodule Needle.ULID.PrefixedUUIDTest do
   use ExUnit.Case, async: true
 
@@ -67,4 +68,5 @@ defmodule Needle.ULID.PrefixedUUIDTest do
     assert {:ok, uuid} = PrefixedUUID.dump(prefixed_uuid, nil, @params)
     assert {:ok, %UUID{format: :raw, version: 7}} = UUID.parse(uuid)
   end
+end
 end
