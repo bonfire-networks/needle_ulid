@@ -190,7 +190,7 @@ defmodule Needle.ULID do
   def generate(timestamp \\ System.system_time(:millisecond))
   def generate(%DateTime{} = date), do: DateTime.to_unix(date, :millisecond) |> generate()
 
-  def generate(timestamp),
+  def generate(timestamp) when is_integer(timestamp),
     do: ExULID.ULID.generate(timestamp)
 
   @doc """
