@@ -163,7 +163,7 @@ defmodule Needle.ULID do
   @doc """
   Converts a binary ULID into a Crockford Base32 encoded string.
   """
-  def load(<<0::size(16)>>), do: "00000000000000000000000000"
+  def load(<<0::size(16)>>), do: {:ok, "00000000000000000000000000"}
 
   def load(bytes) when is_binary(bytes) and byte_size(bytes) == 16,
     do: encode(bytes)
@@ -209,7 +209,7 @@ defmodule Needle.ULID do
   def bingenerate(timestamp),
     do: <<timestamp::size(48), random()::binary>>
 
-  defp encode(bytes, leading_zeroes? \\ true) do
+  def encode(bytes, leading_zeroes? \\ true) do
     with {:ok, encoded} <- ExULID.Crockford.encode32(bytes) do
       padded = if leading_zeroes?, do: add_leading_zeroes(encoded), else: encoded
 
@@ -220,7 +220,7 @@ defmodule Needle.ULID do
   defp add_leading_zeroes(bytes) when byte_size(bytes) >= 26, do: bytes
   defp add_leading_zeroes(bytes), do: add_leading_zeroes("0" <> bytes)
 
-  defp decode(bytes) do
+  def decode(bytes) do
     case ExULID.ULID.decode(bytes) do
       {:error, _} ->
         :error
@@ -231,7 +231,7 @@ defmodule Needle.ULID do
     end
   end
 
-  defp valid?(
+  def valid?(
          <<c1::8, c2::8, c3::8, c4::8, c5::8, c6::8, c7::8, c8::8, c9::8, c10::8, c11::8, c12::8,
            c13::8, c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8,
            c24::8, c25::8, c26::8>>
@@ -242,7 +242,7 @@ defmodule Needle.ULID do
       v(c21) && v(c22) && v(c23) && v(c24) && v(c25) && v(c26)
   end
 
-  defp valid?(_), do: false
+  def valid?(_), do: false
 
   @compile {:inline, v: 1}
 

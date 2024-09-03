@@ -16,6 +16,7 @@ Originally forked from
 
 ## Copyright and License
 
+Copyright (c) 2021 Bonfire contributors.
 Copyright (c) 2018 The RealReal, Inc.
 Copyright (c) 2020 needle_ulid contributors.
 

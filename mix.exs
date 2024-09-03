@@ -4,7 +4,7 @@ defmodule Needle.ULID.MixProject do
   def project do
     [
       app: :needle_ulid,
-      version: "0.3.0",
+      version: "0.4.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: "Provides an ULID datatype for Ecto (using ex_ulid) and related helpers",
@@ -36,8 +36,6 @@ defmodule Needle.ULID.MixProject do
     [
       # for ULID support
       {:ex_ulid, "~> 0.1"},
-      # for UUID support
-      {:uniq, "~> 0.6", optional: true},
       {:ecto, "~> 3.4"},
       # you might just want it for in-memory use
       {:ecto_sql, "~> 3.8", optional: true},
