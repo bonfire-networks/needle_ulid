@@ -34,12 +34,12 @@ defmodule Needle.ULID.MixProject do
 
   defp deps do
     [
+      {:ex_doc, "~> 0.16", only: :dev, runtime: false},
       # for ULID support
       {:ex_ulid, "~> 0.1"},
       {:ecto, "~> 3.4"},
       # you might just want it for in-memory use
       {:ecto_sql, "~> 3.8", optional: true},
-      {:ex_doc, "~> 0.16", only: :dev, runtime: false}
     ]
   end
 end
