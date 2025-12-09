@@ -177,11 +177,11 @@ defmodule Needle.ULID do
   defp random(), do: :crypto.strong_rand_bytes(10)
 
 
-def as_uuid(ulid) do
-  with {:ok, id} <- dump(ulid) do
-     Uniq.UUID.to_string(id, :default)
+  def as_uuid(ulid) do
+    with {:ok, id} <- dump(ulid) do
+      Uniq.UUID.to_string(id, :default)
+    end
   end
-end
 
   @doc """
   Generates a Crockford Base32 encoded ULID.
