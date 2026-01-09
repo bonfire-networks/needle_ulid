@@ -4,7 +4,7 @@ defmodule Needle.ULID.MixProject do
   def project do
     [
       app: :needle_ulid,
-      version: "0.4.0",
+      version: "0.5.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: "Provides an ULID datatype for Ecto (using ex_ulid) and related helpers",
