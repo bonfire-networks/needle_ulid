@@ -233,8 +233,12 @@ defmodule Needle.ULID do
         :error
 
       {time, randomness} ->
-        {:ok, wat} = ExULID.Crockford.decode32(randomness)
-        {:ok, <<time::48, wat::binary>>}
+        with {:ok, wat} <- ExULID.Crockford.decode32(randomness) do
+          {:ok, <<time::48, wat::binary>>}
+        else
+          {:error, e} ->
+            Logger.error("Error #{e} when decoding ULID `#{inspect bytes}`")
+        end
     end
   end
 
