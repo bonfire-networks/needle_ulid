@@ -5,13 +5,14 @@ if Code.ensure_loaded?(Ecto.Migration) do
     # Based on answers to this SO thread, tweaked.
     # https://stackoverflow.com/questions/49227572/function-minuuid-does-not-exist-in-postgresql
 
-    defp create_agg(op) do
+    # `sortop` is what Postgres orders an index by to answer the aggregate from it (`ORDER BY col USING sortop LIMIT 1`), so it has to be the operator that puts the wanted row first: `<` for a min, `>` for a max. A max with `<` returns the minimum whenever the planner takes that route.
+    defp create_agg(op, sortop) do
       """
       create or replace aggregate #{op}(uuid) (
         sfunc = #{op}_uuid,
         stype = uuid,
         combinefunc = #{op}_uuid,
-        sortop = operator (<),
+        sortop = operator (#{sortop}),
         parallel = safe
       )
       """
@@ -50,9 +51,9 @@ if Code.ensure_loaded?(Ecto.Migration) do
 
     defp max_uuid(), do: execute(@max_uuid, drop_fun("max_uuid"))
 
-    defp min(), do: execute(create_agg("min"), drop_agg("min"))
+    defp min(), do: execute(create_agg("min", "<"), drop_agg("min"))
 
-    defp max(), do: execute(create_agg("max"), drop_agg("max"))
+    defp max(), do: execute(create_agg("max", ">"), drop_agg("max"))
 
     defp functions() do
       min_uuid()
